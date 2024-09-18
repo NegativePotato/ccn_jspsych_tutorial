@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>CCN jsPsych Tutorial</title>
+    <script src="https://unpkg.com/jspsych@8.0.0"></script> <!-- jsPsych lib -->
+    <script src="https://unpkg.com/@jspsych/plugin-html-keyboard-response@2.0.0"></script> <!-- some plugin we need for experiments -->
+    <script src="https://unpkg.com/@jspsych/plugin-image-keyboard-response@2.0.0"></script> <!-- some plugin we need for experiments -->
+    <script src="https://unpkg.com/@jspsych-contrib/plugin-pipe"></script>
+    <link href="https://unpkg.com/jspsych@8.0.0/css/jspsych.css" rel="stylesheet" type="text/css" /> <!-- style sheet -->
+  </head>
+  <body></body>
+  <script>
+    /* Initialise jsPsych */
+    var jsPsych = initJsPsych();
+    var timeline = [];
+    var instructions = {
+      type: jsPsychHtmlKeyboardResponse, 
+      stimulus: "Something something instructions, something something do stuff"  // can be any html, video, image...
+    };
+
+    var image_trial = {
+      type: jsPsychImageKeyboardResponse, 
+      stimulus: "img/Freya.jpg",
+      choices: ['y', 'i'],
+      prompt: "Does this person's name start with a Y. Press Y for Y and I for I"
+    };
+
+    // Defining fixation yay
+    var fixation = {
+      type: jsPsychHtmlKeyboardResponse, 
+      stimulus: "+", // can be any html, video, image...
+      choice: "NO_KEYS", 
+      trial_duration: 500
+    };
+
+    var image_trial_timeVar = {
+      type: jsPsychImageKeyboardResponse, 
+      stimulus: jsPsych.timelineVariable('image'),
+      choices: ['f', 'l'],
+      prompt: "Does this person's name start with a F. Press F for F and L for L"
+    };
+
+    var trial_procedure = {
+    timeline: [fixation, image_trial_timeVar],
+    timeline_variables: [
+      {image: "img/Freya.jpg", name: "Freya"}, 
+      {image: "img/LadyFox.png", name: "LadyFox"},
+    ]
+    }
+
+    const subject_id = jsPsych.randomization.randomID(10);
+    const filename = `${subject_id}.csv`;
+
+    const save_data = {
+      type: jsPsychPipe,
+      action: "save",
+      experiment_id: "uvJ3bCqc5Kl3",
+      filename: filename,
+      data_string: ()=>jsPsych.data.get().csv()
+    };
+
+    timeline.push(instructions);
+    timeline.push(trial_procedure);
+    timeline.push(save_data);
+
+    jsPsych.run(timeline);
+  </script>
+</html>
